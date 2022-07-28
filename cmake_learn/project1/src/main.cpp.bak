@@ -1,0 +1,106 @@
+#include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include "dltools.h"
+#include <vector>
+#include <FreeImage.h>
+
+void run_dl_test(){
+    dl::Box box1 = {10.0,10.0,20.0,20.0};
+    dl::Box box2 = {15.0,15.0,25.0,25.0};
+    double iou = dl::IOU(box1,box2);
+    dl::BBOX bbox1 = {box1,0.9};
+    dl::BBOX bbox2 = {box2,0.5};
+
+    std::vector<dl::BBOX> inputs = {bbox1,bbox2};
+    std::vector<dl::BBOX> res = dl::NMS(inputs,0.15);
+
+    for(auto rect:res){
+        std::cout<<rect.box.x1<<" "<<rect.box.y1<<" "<<rect.box.x2<<" "<<rect.box.x2<<std::endl;
+    }
+    std::cout<<iou<<std::endl;
+
+}
+
+void read_camera(){
+    cv::VideoCapture cap(0);
+    cv::Mat img;
+    while(true){
+        cap.read(img);
+        cv::imshow("camera",img);
+        cv::waitKey(10);
+    }
+}
+
+
+void read_png(){
+    std::string file_path = "/Users/zifanwu/VSCodeProjects/GifModify/tools/test_data/1.png";
+    cv::Mat img = cv::imread(file_path,cv::IMREAD_UNCHANGED); // 注意这里是UNCHANGED
+    std::cout<<img.cols<<" "<<img.rows<<" "<<img.channels()<<std::endl;
+    cv::imshow("test",img);
+    cv::waitKey();
+    std::cout<<"good"<<std::endl;
+}
+
+void testfreeimage(const char* imageFile){
+
+    
+    // 图片格式
+    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	// 获取图片格式
+	fif = FreeImage_GetFileType(imageFile);
+    std::cout<<"img format "<<fif<<std::endl;
+
+	FIBITMAP *bitmap = NULL;//存放图片内容的结构体
+	bitmap = FreeImage_Load(fif, imageFile, PNG_DEFAULT);//加载图片内容的函数
+
+	int width = FreeImage_GetWidth(bitmap);//获取宽度
+	int height = FreeImage_GetHeight(bitmap);//获取高度
+	unsigned int byte_per_pixel = FreeImage_GetLine(bitmap) / width;//获取像素深度
+	std::cout<<width<<" "<<height<<" "<<byte_per_pixel<<std::endl;
+
+	unsigned char *bits = FreeImage_GetBits(bitmap);//获取存放图片像素颜色信息的数组
+
+	int cur=0;
+	for (int x = 0; x < width*height; ++x){//遍历数组
+        // 这里对应于上述的每个像素的字节数,对于RGBA图片,这里是4
+		for(int y=0;y<4;y++)
+		{
+			// std::cout<<(int)bits[cur]<<" ";
+			cur++;
+		}
+		// std::cout<<std::endl;
+    }
+
+}
+
+int main(){
+    // read_png();
+    // read_camera();
+    // std::string file_path = "/Users/zifanwu/VSCodeProjects/cpp_uni/homework/igg_image_homework3/data/test.png";
+    // std::string file_path = "/Users/zifanwu/VSCodeProjects/GifModify/tools/test_data/1.png";
+    // cv::Mat img = cv::imread(file_path,cv::IMREAD_UNCHANGED);
+    // std::cout<<img.cols<<" "<<img.rows<<" "<<img.channels()<<std::endl;
+    // cv::imshow("test",img);
+    // cv::waitKey();
+    // std::cout<<"good"<<std::endl;
+    // std::string file_path = "/Users/zifanwu/VSCodeProjects/cpp_uni/cmake_learn/project1/data/test.gif";
+    // cv::VideoCapture capture(file_path);
+    // cv::Mat img;
+    // while(capture.read(img)){
+    //     cv::cvtColor(img,img,cv::COLOR_BGR2BGRA);
+    //     cv::imshow("test",img);
+    //     std::cout<<img.cols<<" "<<img.rows<<" "<<img.channels()<<std::endl;
+    //     cv::waitKey(1000);
+    // }
+
+    const char* imageFile_png = "/Users/zifanwu/VSCodeProjects/cpp_uni/cmake_learn/project1/data/face1.png";
+    const char* imageFile_gif = "/Users/zifanwu/VSCodeProjects/cpp_uni/cmake_learn/project1/data/test.gif";
+    testfreeimage(imageFile_png);
+    std::cout<<" "<<std::endl;
+    testfreeimage(imageFile_gif);
+
+    return 0;
+}

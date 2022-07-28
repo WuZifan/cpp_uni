@@ -1,0 +1,21 @@
+PROJECT (HELLO) 
+cmake_minimum_required(VERSION 3.1)
+set(CMAKE_OSX_ARCHITECTURES arm64)
+
+include_directories(3rdParty/include)
+
+set (CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+
+
+add_subdirectory(src)
+MESSAGE(STATUS "This is BINARY dir " ${HELLO_BINARY_DIR}) 
+MESSAGE(STATUS "This is SOURCE dir "${HELLO_SOURCE_DIR}) 
+
+

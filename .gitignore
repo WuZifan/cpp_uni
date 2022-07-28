@@ -1,0 +1,6 @@
+**/build
+**/bin
+*.zip
+*.tar.gz
+opencv-4.6.0
+png++-0.2.9
